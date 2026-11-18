@@ -170,8 +170,8 @@ export function createWorld(random) {
     const gained = Math.round(enemy.score * multiplier);
     state.score += gained;
     addText(state, enemy.x, enemy.y - 10, `+${gained}`, '#ffd60a');
-    addParticles(state, enemy.x, enemy.y, enemy.color, enemy.kind === 'herald' ? 60 : 16, 260, 0.6, 4);
-    addParticles(state, enemy.x, enemy.y, '#ffffff', 6, 160, 0.35, 3);
+    addParticles(state, enemy.x, enemy.y, enemy.color, enemy.kind === 'herald' ? 60 : 26, 260, 0.6, 4);
+    addParticles(state, enemy.x, enemy.y, '#ffffff', 10, 160, 0.35, 3);
     if (enemy.kind === 'splitter') {
       for (let i = 0; i < 3; i += 1) {
         const mini = spawnEnemy(random, 'mini', state.wave, player);
@@ -240,7 +240,7 @@ export function createWorld(random) {
       });
     }
     state.stats.shotsFired += count;
-    addParticles(state, player.x + Math.cos(baseAngle) * 22, player.y + Math.sin(baseAngle) * 22, '#8ef6ff', 2, 90, 0.18, 2);
+    addParticles(state, player.x + Math.cos(baseAngle) * 22, player.y + Math.sin(baseAngle) * 22, '#8ef6ff', 3, 90, 0.18, 2);
   }
 
   function novaBlast() {

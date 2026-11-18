@@ -21,16 +21,51 @@ function makeStars() {
     return seed / 4294967296;
   };
   const stars = [];
-  for (let i = 0; i < 150; i += 1) {
+  for (let i = 0; i < 240; i += 1) {
     stars.push({
       x: next() * FIELD.width,
       y: next() * FIELD.height,
-      r: 0.6 + next() * 1.7,
+      r: 0.6 + next() * 2.0,
       phase: next() * Math.PI * 2,
       speed: 0.4 + next() * 1.2,
     });
   }
   return stars;
+}
+
+function makeNebulae() {
+  // A few large, soft clouds of colour pinned to the field, so the void
+  // never reads as empty black. Fixed positions and colours, so the
+  // backdrop is stable from run to run.
+  return [
+    { x: 220, y: 150, r: 300, color: 'rgba(124, 92, 255, 0.24)' },
+    { x: 1060, y: 120, r: 260, color: 'rgba(77, 232, 255, 0.15)' },
+    { x: 980, y: 580, r: 320, color: 'rgba(255, 77, 141, 0.18)' },
+    { x: 300, y: 600, r: 280, color: 'rgba(45, 212, 191, 0.15)' },
+    { x: 640, y: 360, r: 360, color: 'rgba(124, 92, 255, 0.12)' },
+  ];
+}
+
+function makeDust() {
+  // Slow-drifting motes of light that give the void depth and motion.
+  // Fixed seed, so the backdrop is stable from run to run.
+  let seed = 777;
+  const next = () => {
+    seed = (seed * 1664525 + 1013904223) >>> 0;
+    return seed / 4294967296;
+  };
+  const dust = [];
+  for (let i = 0; i < 46; i += 1) {
+    dust.push({
+      x: next() * FIELD.width,
+      y: next() * FIELD.height,
+      r: 1.5 + next() * 3.2,
+      drift: 4 + next() * 10,
+      phase: next() * Math.PI * 2,
+      color: next() > 0.5 ? '#7c5cff' : '#4de8ff',
+    });
+  }
+  return dust;
 }
 
 function roundRect(ctx, x, y, w, h, r) {
@@ -78,6 +113,8 @@ function drawStar(ctx, x, y, radius, color, rotation) {
 export function createRenderer(canvas) {
   const ctx = canvas.getContext('2d');
   const stars = makeStars();
+  const nebulae = makeNebulae();
+  const dust = makeDust();
   let scale = 1;
   let offsetX = 0;
   let offsetY = 0;
@@ -116,6 +153,21 @@ export function createRenderer(canvas) {
     gradient.addColorStop(1, PALETTE.backdropBottom);
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, FIELD.width, FIELD.height);
+    // Soft nebula clouds, so the void reads as deep space, not empty black.
+    for (const nebula of nebulae) {
+      drawGlowCircle(ctx, nebula.x, nebula.y, nebula.r, nebula.color, 1);
+    }
+    // Drifting motes of light, for depth and gentle motion.
+    for (const mote of dust) {
+      const dx = (mote.x + time * mote.drift) % FIELD.width;
+      const alpha = 0.18 + 0.22 * (0.5 + 0.5 * Math.sin(time * 0.7 + mote.phase));
+      ctx.globalAlpha = alpha;
+      ctx.fillStyle = mote.color;
+      ctx.beginPath();
+      ctx.arc(dx, mote.y, mote.r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
     // Twinkling stars.
     for (const star of stars) {
       const alpha = 0.25 + 0.55 * (0.5 + 0.5 * Math.sin(time * star.speed + star.phase));

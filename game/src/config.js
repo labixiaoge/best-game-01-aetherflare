@@ -49,9 +49,9 @@ export const ENEMY_BULLET = { radius: 7, speed: 235, damage: 12 };
 
 /** How a wave is built: base count plus per-wave growth, and when each kind joins. */
 export const WAVE = {
-  baseCount: 7,
+  baseCount: 9,
   perWave: 3,
-  spawnInterval: 0.72,
+  spawnInterval: 0.62,
   spawnIntervalMin: 0.26,
   hpScalePerWave: 0.13,
   speedScalePerWave: 0.028,

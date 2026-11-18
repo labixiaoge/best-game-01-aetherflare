@@ -9,7 +9,7 @@ import { EVENT_OVER, EVENT_VICTORY, EVENT_WAVE_CLEAR } from './world.js';
 import { SCREEN_OVER, SCREEN_PLAY, SCREEN_TITLE } from './render.js';
 
 const START_SECONDS = 6;
-const PLAY_SECONDS = 11;
+const PLAY_SECONDS = 10;
 const BOSS_WAIT_SECONDS = 40;
 const BOSS_FIGHT_SECONDS = 5;
 const END_LIMIT_SECONDS = 120;
@@ -98,7 +98,9 @@ function simulate(world, seconds, skilled) {
 export function stageShot(name, world) {
   world.reset();
   if (name === 'play') {
-    world.beginWave(3);
+    // Wave 4, caught early while the spawn queue is still feeding foes in:
+    // the frame shows a full, busy arena instead of the tail of a wave.
+    world.beginWave(4);
     simulate(world, PLAY_SECONDS, true);
     return { screen: SCREEN_PLAY, best: world.state.score };
   }
